@@ -1,6 +1,4 @@
-﻿// LabaM2.cpp : Этот файл содержит функцию "main". Здесь начинается и заканчивается выполнение программы.
-//
-
+﻿//Solution on Python in Python/2laba_SLAU_
 #include <iostream>
 #include<cmath>
 const int n = 3;

@@ -1,3 +1,4 @@
+//Solution on Python in Python/1laba_Teylor_
 #include <iostream>
 #include <cmath>
 using namespace std;
@@ -42,16 +43,11 @@ double cosinus(double x) {
 	if (x > pi) x -= pi;
 	if (x > pi / 2)x = pi - x;
 	double a = 1;
-	//bool neg = false;
 	for (int k = 1; fabs(a) > Ep;k++) {
 		It++;
 		a = -a * (pow(x, 2) / (2 * k * (2 * k - 1)));
 		sum += a;
-		/*if (a < 0) {
-			neg = !neg;
-		}*/
 	}
-	//if (neg) sum = -sum;
 	return sum;
 }
 
