@@ -1,0 +1,76 @@
+set search_path to store;
+
+
+
+create table client_select_copy as select * from client
+create table client_like_copy (like client including all);
+
+set search_path to store;
+insert into client_like_copy select * from client;
+
+set search_path to store;
+select * from client_select_copy
+union all
+select * from client_like_copy
+order by id
+
+
+set search_path to store;
+
+alter table sale
+  add constraint fk_client_order1_lc
+    foreign key (client_id) 
+    references client_like_copy(id);
+
+alter table client_like_copy 
+  add constraint fk_client_source1_lc
+    foreign key (source_id) 
+    references source(id);
+
+alter table client_select_copy 
+alter column id set not null,
+alter column first_name set not null;
+
+alter table sale
+  add constraint fk_order_client1_sc
+    foreign key (client_id) 
+    references client_select_copy(id);
+
+alter table client_select_copy 
+  add primary key (id),
+  add  constraint fk_client_source1_sc
+    foreign key (source_id) 
+    references source(id);
+
+alter table sale
+  drop constraint fk_order_client1;
+alter table client 
+  drop constraint fk_client_source1;
+
+drop table client
+
+set search_path to store;
+
+
+alter table category_has_good
+add column category_id2 int
+
+set search_path to store;
+update category_has_good
+set category_id2 = category_id
+
+
+set search_path to store;
+select * from category_has_good
+order by good_id
+
+set search_path to store;
+alter table category_has_good
+add constraint fk_category_has_good_category_copy
+    foreign key (category_id2) 
+    references category(id)
+
+set search_path to store;
+alter table category_has_good
+drop constraint fk_category_has_good_category,
+drop column category_id

@@ -1,0 +1,126 @@
+set search_path to store;
+
+select category.name, good.name
+from category_has_good
+inner join good  on good.id = good_id
+inner join category on category.id = category_id
+
+select first_name, last_name, sum
+from (select client_id, sum(sale_sum)
+from sale
+inner join status on status.id = status_id
+where status.name = 'new'
+group by client_id) t1
+inner join client on client.id = client_id
+
+select category.name as c_name , good.name as g_name
+from category_has_good
+full join good  on good.id = good_id
+left join category on category.id = category_id
+
+select category.name as c_name , good.name as g_name
+from category_has_good
+full join good  on good.id = good_id
+full join category on category.id = category_id
+
+select source.name,sale_sum
+from (select client_id,sum(sale_sum) as sale_sum
+from sale
+group by client_id) t1
+inner join client on client_id = client.id
+inner join source on source_id = source.id
+
+
+select good.name
+from good
+inner join category_has_good on good.id = category_has_good.good_id
+inner join category on category_has_good.category_id = category.id
+where category.name = 'Cakes'
+union
+select good.name
+from good
+inner join sale_has_good on good.id = sale_has_good.good_id
+inner join sale on sale_has_good.sale_id = sale.id
+inner join status on sale.status_id = status.id
+where status.name = 'delivering'
+
+
+  
+select  c_name, count(sale_sum) as sale_num
+from sale_has_good
+inner join(
+  select good.id, category.name as c_name , good.name as g_name
+from category_has_good
+full join good  on good.id = good_id
+full join category on category.id = category_id
+) t1
+on good_id = t1.id 
+inner join sale on sale.id = sale_id
+group by c_name
+
+
+select source.name
+from source
+left join client on source.id = client.source_id
+where client.id is null
+union
+select source.name
+from source
+inner join client on source.id = client.source_id
+left join sale on client.id = sale.client_id
+where sale.id is null
+union
+select distinct source.name
+from source
+inner join client on source.id = client.source_id
+inner join sale on client.id = sale.client_id
+inner join status on sale.status_id = status.id
+where status.name = 'rejected'
+
+
+set search_path to store;
+
+INSERT INTO store.client (id, code, first_name, last_name, source_id)
+  VALUES (11, 'client_11', 'Klient', 'Bezzacazov', (select id from source where name= 'Google Search'));
+INSERT INTO store.source (id, name) VALUES (8, 'ssss');
+select source.name, count(*) over()
+from source
+left join client on source.id = client.source_id
+where client.id is null
+group by source.name
+union
+select source.name, count(*) over()
+from source
+left join client on source.id = source_id
+where client.id not in (select client_id from sale)
+group by source.name
+union
+select source.name,count(*) over()
+from source
+inner join client on source.id = client.source_id
+inner join sale on client.id = sale.client_id
+inner join status on sale.status_id = status.id
+where status.name = 'rejected'
+group by source.name
+
+
+
+set search_path to store;
+
+with cat as (select category.name,count(*) as c
+from category
+inner join category_has_good on category.id = category_id
+left join good on category_has_good.good_id = good.id
+inner join sale_has_good on sale_has_good.good_id = good.id
+inner join sale on sale_id = sale.id
+inner join status on status.id = status_id
+where status.name = 'rejected'
+group by category.name)
+
+select name,c 
+from (
+  select * , dense_rank() over(order by c desc) as rank
+  from cat
+) t1
+where rank = 1
+

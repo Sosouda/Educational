@@ -1,0 +1,111 @@
+set search_path to lab00;
+CREATE TABLE if not exists groups (
+    id SERIAL PRIMARY KEY,
+    group_name VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE if not exists students (
+    id SERIAL PRIMARY KEY,
+    student_name VARCHAR(255) NOT NULL,
+    group_id INT NOT NULL,
+    FOREIGN KEY (group_id)
+    REFERENCES groups(id)
+    ON UPDATE CASCADE
+    ON DELETE RESTRICT
+);
+
+CREATE TABLE if not exists subjects (
+    id SERIAL PRIMARY KEY,
+    subject_name VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS worktype(
+  id SERIAL PRIMARY KEY,
+  type_name varchar(255) not null
+);
+
+CREATE TABLE if not exists marks (
+    id SERIAL PRIMARY KEY,
+    student_id INT NOT NULL,
+    subject_id INT NOT NULL,
+    type_id INT NOT NULL,
+    mark varchar(17),
+    sem_num INT NOT NULL,
+    FOREIGN KEY (type_id)
+    REFERENCES worktype(id)
+    ON UPDATE CASCADE
+    ON DELETE RESTRICT,
+    FOREIGN KEY (student_id)
+    REFERENCES students(id)
+    ON UPDATE CASCADE
+    ON DELETE RESTRICT,
+    FOREIGN KEY (subject_id)
+    REFERENCES subjects(id)
+    ON UPDATE CASCADE
+    ON DELETE RESTRICT
+);
+
+INSERT INTO groups (group_name) VALUES
+('К3-13Б'),
+('К3-34Б'),
+('К3-55Б'),
+('К3-76Б');
+
+INSERT INTO worktype (type_name) VALUES
+('Зачёт'),
+('Экзамен'),
+('Курсовая работа'),
+('Практика');
+
+INSERT INTO subjects (subject_name) VALUES
+('Алгоритмы машинного обучения'),
+('Реляционная алгебра'),
+('Программирование на языках высокого уровня'),
+('Системное программное обеспечение'),
+('Физическая культура и спорт');
+
+INSERT INTO students (student_name, group_id) VALUES
+('Иванов Алексей', 1),    
+('Петрова Мария', 1),   
+('Сидоров Дмитрий', 2),  
+('Козлова Анна', 2),     
+('Волков Сергей', 3),   
+('Орлова Екатерина', 3),  
+('Николаев Павел', 4),    
+('Зайцева Ольга', 4);     
+
+INSERT INTO marks (student_id, subject_id, type_id, mark, sem_num) VALUES
+
+(1, 1, 1, null, 1),   
+(2, 1, 1, 'Зачёт', 1),
+(3, 1, 1, null, 1),
+(4, 2, 1, 'Зачёт', 1),
+(5, 2, 1, null, 1),
+(6, 2, 1, null, 1),
+(7, 3, 1, 'Зачёт', 1),
+(8, 3, 1, null, 1),
+(1, 3, 2, 'Отлично', 2),
+(2, 4, 2, 'Удовлетворительно', 2),
+(3, 4, 2, 'Неудовлетворительно', 2),
+(4, 4, 2, 'Хорошо', 2),
+(5, 5, 2, 'Удовлетворительно', 2),
+(6, 5, 2, 'Хорошо', 2),
+(1, 5, 3, 'Удовлетворительно', 3),   
+(2, 1, 3, 'Хорошо', 3),
+(3, 1, 3, 'Хорошо', 3),
+(4, 1, 3, 'Удовлетворительно', 3),
+(5, 2, 3, 'Хорошо', 4),
+(6, 2, 3, 'Удовлетворительно', 4),
+(7, 2, 3, 'Хорошо', 4),
+(8, 3, 3, 'Неудовлетворительно', 5),
+(1, 3, 3, 'Хорошо', 5),
+(2, 3, 3, 'Неудовлетворительно', 5),
+(3, 4, 3, 'Удовлетворительно', 5),
+(4, 4, 4, 'Хорошо', 6),
+(5, 4, 4, 'Неудовлетворительно', 6);
+
+select subject_name,student_name,group_name, mark, sem_num
+from marks
+inner join subjects on marks.subject_id = subjects.id
+inner join students on marks.student_id = students.id
+inner join groups on students.group_id = groups.id;
